@@ -1,11 +1,25 @@
 import PyPDF2
 import sys
+import click
 
+@click.group()
+def cli():
+  pass
 
+@cli.command(name='rotate', help='args: .pdf file, pdf_page, num_rotations_CW_90deg')
+@click.argument('pdf_file', nargs=1, type=click.Path())
+@click.argument('page', default=1, nargs=1)
+@click.argument('num_rotations', default=1, nargs=1)
 def pdf_rotateCW_90(pdf_file, page=1, num_rotations=1):
   """
   Rotate the page in the file and save it to a new file
   """
+  try:
+    assert pdf_file.split(".")[1] == 'pdf'
+  except:
+    print('Please use <filename.pdf> as an argument')
+    sys.exit()
+
   file = open(pdf_file, 'rb')
   reader = PyPDF2.PdfFileReader(file)
   writer = PyPDF2.PdfFileWriter()
@@ -25,55 +39,28 @@ def pdf_rotateCW_90(pdf_file, page=1, num_rotations=1):
   file.close()
   new_file.close()
 
+@cli.command(name='merge', help='args: 2+ .pdf files')
+@click.argument('pdf_list', nargs=-1, type=click.Path())
 def pdf_combiner(pdf_list):
   """
   Merge list of input pdf files into a new merged pdf file
   """
-  merger = PyPDF2.PdfFileMerger()
-  for pdf in pdf_list:
-    merger.append(pdf)
+  try:
+    assert len(pdf_list) > 1
+    for file in pdf_list:
+      assert file.split(".")[1] == 'pdf'
+  except:
+    print('Please use 2+ <filename.pdf> files as an argument')
+    sys.exit()
 
-  merger.write('merged_pdf.pdf')
+  merger = PyPDF2.PdfFileMerger()
+  for file in pdf_list:
+    merger.append(file)
+
+  merger.write('merged.pdf')
   print(f'New file "merged.pdf" created')
   merger.close()
 
 
 if __name__ == '__main__':
-  if len(sys.argv) == 1:
-    print(f'*******************************************************************')
-    print(f'Purpose: To merge pdf\'s or rotate pages in them')
-    print(f'merge args : 2+ file names (include .pdf) to merge in sequential order')
-    print(f'rotate args: one file name (include .pdf)')
-    print(f'             page num to rotate (default=1)')
-    print(f'             number of times to rotate 90deg clockwise (default=1)')
-    print(f'*******************************************************************')
-    sys.exit()
-
-  inputs = sys.argv[1:]
-
-  choice = input("Type 'merge' or 'rotate': ")
-  if choice == 'merge':
-    try:
-      for i in range(len(inputs)):
-        assert isinstance(inputs[i], str)
-      if len(inputs) > 1:
-        pdf_combiner(inputs)
-    except:
-      print(f'run program with no args to see help')
-  elif choice == 'rotate':
-    try:
-      assert isinstance(inputs[0], str)
-
-    except:
-      print(f'run program with no args to see help')
-
-    if len(inputs) == 1:
-      pdf_rotateCW_90(pdf_file=inputs[0])
-    elif len(inputs) == 2:
-      pdf_rotateCW_90(pdf_file=inputs[0], page=int(inputs[1]))
-    elif len(inputs) == 3:
-      pdf_rotateCW_90(pdf_file=inputs[0], page=int(inputs[1]), num_rotations=int(inputs[2]))
-
-  else:
-    sys.exit()
-    
+  cli()
