@@ -27,8 +27,6 @@ def pdf_rotateCW_90(pdf_file, page=1, num_rotations=1):
     sys.exit()
 
   file = open(pdf_file, 'rb')
-#  reader = PyPDF2.PdfFileReader(file)
-#  writer = PyPDF2.PdfFileWriter()
   reader = PyPDF2.PdfReader(file)
   writer = PyPDF2.PdfWriter()
 
@@ -46,8 +44,6 @@ def pdf_rotateCW_90(pdf_file, page=1, num_rotations=1):
 
   file.close()
   new_file.close()
-  reader.close()
-  writer.close()
 
 
 @cli.command(name='concatenate', help='args: concatenates 2+ .pdf files')
@@ -65,7 +61,6 @@ def pdf_concatenate(pdf_list):
     print('Please use 2+ <filename.pdf> files as an argument')
     sys.exit()
 
-#  merger = PyPDF2.PdfFileMerger()
   merger = PyPDF2.PdfMerger()
   for file in pdf_list:
     merger.append(file)
@@ -84,16 +79,21 @@ def pdf_merge(pdf_tuples):
   Merge list of tuples (position to insert, .pdf file, pages (start, stop[, step])) into a new merged .pdf file
   """
   try:
+    print('1')
     assert len(pdf_tuples) > 1
+    print('2')
     for tuple in pdf_tuples:
+      print('3')
       assert len(tuple) == 3
+      print('4')
       assert tuple[1].split(".")[1] == 'pdf'
+      print('5')
       assert os.path.isfile(tuple[1])
+      print('6')
   except:
     print('Please use tuples: (position to insert [0:], <filename.pdf>, (start, stop[, step])) as arguments')
     sys.exit()
 
-#  merger = PyPDF2.PdfFileMerger()
   merger = PyPDF2.PdfMerger()
   for tuple in pdf_tuples:
     merger.merge(position=tuple[0], fileobj=tuple[1], pages=tuple[2])
@@ -107,8 +107,8 @@ def pdf_merge(pdf_tuples):
 
 @cli.command(name='delete', help='args: .pdf file, pages seperated by a space')
 @click.argument('pdf_file', nargs=1, type=click.Path())
-@click.argument('pages', default=1, nargs=-1)
-def pdf_delete(pdf_file, pages):
+@click.argument('pages_str', nargs=-1)
+def pdf_delete(pdf_file, pages_str):
   """
   Delete pages from a .pdf file and save it to a new file
   """
@@ -119,9 +119,11 @@ def pdf_delete(pdf_file, pages):
     print('Please use <filename.pdf> as an argument')
     sys.exit()
 
+  pages = []
+  for i in pages_str:
+    pages.append(int(i) - 1)
+
   file = open(pdf_file, 'rb')
-#  reader = PyPDF2.PdfFileReader(file)
-#  writer = PyPDF2.PdfFileWriter()
   reader = PyPDF2.PdfReader(file)
   writer = PyPDF2.PdfWriter()
 
@@ -137,8 +139,6 @@ def pdf_delete(pdf_file, pages):
 
   file.close()
   new_file.close()
-  reader.close()
-  writer.close()
 
 
 if __name__ == '__main__':
