@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import PyPDF2
-import sys
+#import sys
 import os.path
 import argparse
 
@@ -19,7 +19,7 @@ def pdf_rotateCW_90(pdf_file, page=1, num_rotations=1):
     assert os.path.isfile(pdf_file)
   except:
     print('Please use <filename.pdf> as an argument')
-    sys.exit()
+#    sys.exit()
 
   file = open(pdf_file, 'rb')
   reader = PyPDF2.PdfReader(file)
@@ -54,7 +54,7 @@ def pdf_concatenate(pdf_list):
       assert os.path.isfile(file)
   except:
     print('Please use 2+ <filename.pdf> files as an argument')
-    sys.exit()
+#    sys.exit()
 
   merger = PyPDF2.PdfMerger()
   for file in pdf_list:
@@ -87,7 +87,7 @@ def pdf_merge(pdf_tuples):
       print('6')
   except:
     print('Please use tuples: (position to insert [0:], <filename.pdf>, (start, stop[, step])) as arguments')
-    sys.exit()
+#    sys.exit()
 
   merger = PyPDF2.PdfMerger()
   for tuple in pdf_tuples:
@@ -107,16 +107,18 @@ def pdf_delete(pdf_file, pages_str):
   """
   Delete pages from a .pdf file and save it to a new file
   """
+  pages = []
+
   try:
     assert pdf_file.split(".")[1] == 'pdf'
     assert os.path.isfile(pdf_file)
-  except:
+    for i in pages_str:
+      pages.append(int(i) - 1)
+  except AssertionError:
     print('Please use <filename.pdf> as an argument')
-    sys.exit()
-
-  pages = []
-  for i in pages_str:
-    pages.append(int(i) - 1)
+  except:
+    print('Pages to be deleted must be integers')
+#    sys.exit()
 
   file = open(pdf_file, 'rb')
   reader = PyPDF2.PdfReader(file)
@@ -148,8 +150,10 @@ if __name__ == '__main__':
 
   if args.concatenate:
     print(f'1 {args.concatenate}')      # 1 ['wtr.pdf', 'dummy.pdf']
+    pdf_concatenate(args.concatenate)
   if args.delete:
     print(f'2 {args.delete}')           # 2 ['wtr.pdf', '2', '5', '7']
+    pdf_delete()
   if args.merge:
     print(f'3 {args.merge}')            # 3 [['0', 'wtr.pdf', '0', '0'], ['1', 'twopage.pdf', '0', '1']]
   if args.rotate:
