@@ -3,13 +3,18 @@
 import PyPDF2
 import sys
 import os.path
-import argparse
+import click
 
 
-#@cli.command(name='rotate', help='args: .pdf file, pdf_page, num_rotations_CW_90deg')
-#@click.argument('pdf_file', nargs=1, type=click.Path())
-#@click.argument('page', default=1, nargs=1)
-#@click.argument('num_rotations', default=1, nargs=1)
+@click.group()
+def cli():
+  pass
+
+
+@cli.command(name='rotate', help='args: .pdf file, pdf_page, num_rotations_CW_90deg')
+@click.argument('pdf_file', nargs=1, type=click.Path())
+@click.argument('page', default=1, nargs=1)
+@click.argument('num_rotations', default=1, nargs=1)
 def pdf_rotateCW_90(pdf_file, page=1, num_rotations=1):
   """
   Rotate a page 90deg clockwise in a .pdf file and save it to a new file
@@ -41,8 +46,8 @@ def pdf_rotateCW_90(pdf_file, page=1, num_rotations=1):
   new_file.close()
 
 
-#@cli.command(name='concatenate', help='args: concatenates 2+ .pdf files')
-#@click.argument('pdf_list', nargs=-1, type=click.Path())
+@cli.command(name='concatenate', help='args: concatenates 2+ .pdf files')
+@click.argument('pdf_list', nargs=-1, type=click.Path())
 def pdf_concatenate(pdf_list):
   """
   Concatenates list of input .pdf files into a new concatenated .pdf file
@@ -67,8 +72,8 @@ def pdf_concatenate(pdf_list):
   merger.close()
 
 
-#@cli.command(name='merge', help='args: 2+ tuples of (position to insert, .pdf file, pages (start, stop[, step]))')
-#@click.argument('pdf_tuples', nargs=-1)
+@cli.command(name='merge', help='args: 2+ tuples of (position to insert, .pdf file, pages (start, stop[, step]))')
+@click.argument('pdf_tuples', nargs=-1)
 def pdf_merge(pdf_tuples):
   """
   Merge list of tuples (position to insert, .pdf file, pages (start, stop[, step])) into a new merged .pdf file
@@ -100,9 +105,9 @@ def pdf_merge(pdf_tuples):
   merger.close()
 
 
-#@cli.command(name='delete', help='args: .pdf file, pages separated by a space')
-#@click.argument('pdf_file', nargs=1, type=click.Path())
-#@click.argument('pages_str', nargs=-1)
+@cli.command(name='delete', help='args: .pdf file, pages seperated by a space')
+@click.argument('pdf_file', nargs=1, type=click.Path())
+@click.argument('pages_str', nargs=-1)
 def pdf_delete(pdf_file, pages_str):
   """
   Delete pages from a .pdf file and save it to a new file
@@ -137,20 +142,4 @@ def pdf_delete(pdf_file, pages_str):
 
 
 if __name__ == '__main__':
-  parser = argparse.ArgumentParser(description="Manipulate .pdf files")
-  group = parser.add_mutually_exclusive_group()
-  group.add_argument('-c', '--concatenate', nargs='+', metavar='FILENAME.PDF')
-  group.add_argument('-d', '--delete', nargs='+', metavar=('FILENAME.PDF', 'PAGE'))
-  group.add_argument('-m', '--merge', nargs=4, action='append', metavar=('PG_INSERT', 'FILENAME.PDF', 'PG_START', 'PG_END'))
-  group.add_argument('-r', '--rotate', nargs=3, metavar=('FILENAME.PDF', 'PAGE', 'NUM_ROTATIONS_CW_90DEG'))
-
-  args = parser.parse_args()
-
-  if args.concatenate:
-    print(f'1 {args.concatenate}')      # 1 ['wtr.pdf', 'dummy.pdf']
-  if args.delete:
-    print(f'2 {args.delete}')           # 2 ['wtr.pdf', '2', '5', '7']
-  if args.merge:
-    print(f'3 {args.merge}')            # 3 [['0', 'wtr.pdf', '0', '0'], ['1', 'twopage.pdf', '0', '1']]
-  if args.rotate:
-    print(f'4 {args.rotate}')           # 4 ['wtr.pdf', '1', '2']
+  cli()
