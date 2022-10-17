@@ -77,8 +77,6 @@ def pdf_rotateCW_90(pdf_file, pages_str_list, num_rotations_str_list):
   num_rotations = []
   disallowed_chars = '[] '
 
-  print(pages_str_list)
-
   try:
     for ch in disallowed_chars:
       pages_str_list = pages_str_list.replace(ch, "")
